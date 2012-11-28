@@ -3,8 +3,8 @@ ATG-Date: 20110329
 ATG-Install-Compatible: 10.0.2
 ATG-Time: 21 32 53
 ATG-Version-Full: 10.0.2
-ATG-Install-Version: ATGPlatform@10.0.2XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- AAABBB
+ATG-Install-Version: ATGPlatform@10.0.2XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ XXAAABBB
 ATG-Builder: releng@fulmar
 ATG-Version: 10.0.2
 ATG-Product: home

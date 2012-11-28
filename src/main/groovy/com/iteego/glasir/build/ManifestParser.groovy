@@ -43,7 +43,7 @@ class ManifestParser extends BaseParser implements GroovyObject {
 
   Action popAndReportLineTooLong = { Context c ->
     Integer indexBeforeNewLine = c.valueStack.pop() as Integer
-    if (indexBeforeNewLine - lastNewLinePosition > 72) {
+    if (indexBeforeNewLine - lastNewLinePosition > 70) {
       c.parseErrors << new ManifestLineTooLongError(c, indexBeforeNewLine)
     }
     lastNewLinePosition = c.currentIndex
@@ -98,7 +98,7 @@ class ManifestParser extends BaseParser implements GroovyObject {
   }
 
   Rule MainAttributeName() {
-    TestNot('Name')
+    TestNot(Name())
     AttributeName()
   }
 
@@ -108,15 +108,11 @@ class ManifestParser extends BaseParser implements GroovyObject {
    * @return
    */
   Rule IndividualSection() {
-    Sequence(IndividualSectionHeader(), ZeroOrMore(PerEntryAttribute()))
+    Sequence(IndividualSectionHeader(), ZeroOrMore(PerEntryAttribute()), NewLine())
   }
 
   Rule IndividualSectionHeader() {
-    Sequence('Name: ', IndividualSectionName())
-  }
-
-  Rule IndividualSectionName() {
-    Sequence(OneOrMore(OtherChar()), NewLine())
+    Sequence(Name(), ':', Value())
   }
 
   /**
@@ -129,7 +125,7 @@ class ManifestParser extends BaseParser implements GroovyObject {
   }
 
   Rule PerEntryAttributeName() {
-    TestNot('Name')
+    TestNot(Name())
     AttributeName()
   }
 
@@ -137,6 +133,9 @@ class ManifestParser extends BaseParser implements GroovyObject {
     Sequence(AlphaNum(), ZeroOrMore(HeaderChar()))
   }
 
+  Rule Name() {
+    String('Name')
+  }
   /**
    * value:                          SPACE *otherchar newline *continuation
    *
@@ -202,5 +201,4 @@ class ManifestParser extends BaseParser implements GroovyObject {
   Rule AlphaNum() {
     FirstOf(Digit(), CharRange('a' as char, 'z' as char), CharRange('A' as char, 'Z' as char))
   }
-
 }

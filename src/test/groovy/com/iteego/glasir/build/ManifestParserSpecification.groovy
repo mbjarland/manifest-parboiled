@@ -30,11 +30,36 @@ import org.parboiled.errors.ParseError
 import groovy.io.LineColumnReader
 import org.parboiled.buffers.InputBuffer
 import org.parboiled.support.Position
+import org.parboiled.parserunners.TracingParseRunner
+import org.parboiled.parserunners.ProfilingParseRunner
+import org.parboiled.parserunners.ParseRunner
 
 /**
  * http://code.google.com/p/spock/wiki/SpockBasics
  */
 class ManifestParserSpecification extends Specification {
+
+  private ParseRunner getParseRunner() {
+    def parser = Parboiled.createParser(ManifestParser)
+    //def runner = new TracingParseRunner(parser.ManifestFile())//
+    //def runner = new ProfilingParseRunner(parser.ManifestFile())//
+    new ReportingParseRunner(parser.ManifestFile())
+  }
+
+  private printErrors(ParsingResult result) {
+    result.parseErrors.each { ParseError e ->
+      Position start = e.inputBuffer.getPosition(e.startIndex)
+      Position end = e.inputBuffer.getPosition(e.endIndex)
+      String failure = e.inputBuffer.extract(e.startIndex, e.endIndex)
+
+      println "${e.toString()}"
+      println "TYPE:  ${e.class.name}"
+      println "AT:    [${start.line}, ${start.column}] to [${end.line}, ${end.column}]"
+      println "DATA:  '${failure}'"
+      println "ERROR: start: ${e.startIndex}, end: ${e.endIndex}, msg: ${e.errorMessage}"
+    }
+  }
+
   File getSampleManifest() {
     URL url = this.class.classLoader.getResource('MANIFEST.MF')
     assert url != null, "Could not locate file MANIFEST.MF on the test classpath"
@@ -42,32 +67,68 @@ class ManifestParserSpecification extends Specification {
     return new File(url.toURI())
   }
 
-  def "should parse a normal manifest file"() {
+  def "should parse large manifest file"() {
     given:
       String data = sampleManifest.text
-      def parser = Parboiled.createParser(ManifestParser)
-      def runner = new ReportingParseRunner(parser.ManifestFile())
-
 
     when:
-      ParsingResult<?> result = runner.run(data)
-      result.parseErrors.each { ParseError e ->
-        Position start = e.inputBuffer.getPosition(e.startIndex)
-        Position end = e.inputBuffer.getPosition(e.endIndex)
-        String failure = e.inputBuffer.extract(e.startIndex, e.endIndex)
+      ParsingResult<?> result = parseRunner.run(data)
+      printErrors(result)
+      //String parseTreePrintOut = ParseTreeUtils.printNodeTree(result)
 
-        println "${e.toString()}"
-        println "TYPE:  ${e.class.name}"
-        println "AT:    [${start.line}, ${start.column}] to [${end.line}, ${end.column}]"
-        println "DATA:  '${failure}'"
-        println "ERROR: start: ${e.startIndex}, end: ${e.endIndex}, msg: ${e.errorMessage}"
-      }
-      String parseTreePrintOut = ParseTreeUtils.printNodeTree(result)
-
-      println parseTreePrintOut
+      //println parseTreePrintOut
 
     then:
       result.parseErrors == []
       result.resultValue == null
   }
+
+  def "should fail on lines longer than 72 bytes"() {
+    given:
+      String data
+      ParsingResult<?> result
+
+    when:
+      data = """|Manifest-Version: 1.0
+                |SomeAttribute: SomeValue
+                |TooLongAttribute: 9212345678931234567894123456789512345678961234567897
+                |
+                |""".stripMargin()
+
+      result = parseRunner.run(data)
+      printErrors(result)
+
+    then:
+      result.parseErrors == []
+
+    when:
+       data = """|Manifest-Version: 1.0
+                 |SomeAttribute: SomeValue
+                 |TooLongAttribute: 92123456789312345678941234567895123456789612345678971
+                 |
+                 |""".stripMargin()
+
+        result = parseRunner.run(data)
+
+    then:
+      result.parseErrors.first() instanceof ManifestLineTooLongError
+
+  }
+
+  @IgnoreRest
+  def "should fail on Name attribute name in main section"() {
+    given:
+      String data = """|Manifest-Version: 1.0
+                       |Name: SomeValue
+                       |SomeOtherAttribute: SomeValue
+                       |
+                       |""".stripMargin()
+
+    when:
+      ParsingResult<?> result = parseRunner.run(data)
+
+    then:
+      result.parseErrors.size() == 1
+  }
+
 }
