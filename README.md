@@ -22,7 +22,7 @@ long, invalid characrters etc it:
 * It gives you no chance of collecting multiple errors and dealing with 
   them in a controlled manner.
 
-Am I upset about this piece of code. Well a bit. 
+Am I upset about this piece of code. Well...a bit. 
 
 As an example, I have implemented a build framework for e-commerce projects 
 where we on a daily basis and for a number of customer scan hundreds of 
