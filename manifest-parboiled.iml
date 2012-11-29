@@ -32,6 +32,7 @@
     <orderEntry type="library" scope="TEST" name="junit-dep-4.9" level="project" />
     <orderEntry type="library" scope="TEST" name="spock-core-0.6-groovy-1.8" level="project" />
     <orderEntry type="library" scope="TEST" name="groovy-all-1.8.5" level="project" />
+    <orderEntry type="library" exported="" name="guava-13.0" level="project" />
   </component>
 </module>
 

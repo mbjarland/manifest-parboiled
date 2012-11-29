@@ -5,6 +5,8 @@ import org.parboiled.BaseParser
 import org.parboiled.Rule
 import org.parboiled.Action
 import org.parboiled.Context
+import com.google.common.collect.SetMultimap
+import com.google.common.collect.HashMultimap
 
 /**
  section:                       *header +newline
@@ -49,6 +51,8 @@ class ManifestParser extends BaseParser implements GroovyObject {
     lastNewLinePosition = c.currentIndex
     true
   } as Action
+
+  SetMultimap<String, String> sectionAttributes = HashMultimap.create()
 
   long lastNewLinePosition = 0
 
