@@ -31,7 +31,7 @@ manifest files for certain meta data.
 When something goes wrong with one of the manifest files, all we get from java
 is things like: 
 
-  new IOException("invalid header field")
+    new IOException("invalid header field")
 
 This tells us close to nothing. No information on what header attribute the issue
 was with, what file it was encountered in, what line, or what column we are supposed
