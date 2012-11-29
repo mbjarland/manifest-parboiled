@@ -6,7 +6,7 @@ next week or two.
 Why do this?
 ------------
 The java Manifest class (used for parsing MANIFEST.MF files found in 
-jaf files, ear files, etc) and the corresponding Attributes class implementations
+java jar files, ear files, etc) and the corresponding Attributes class implementations
 are some of the worst code I have seen in the JDK. When the manifest class 
 encounters an error, such as illegal attribute names, lines which are too 
 long, invalid characrters etc it: 
