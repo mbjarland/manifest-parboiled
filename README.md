@@ -13,7 +13,7 @@ long, invalid characrters etc it:
 
 * Throws an IOException. Just to be sure you got that right: not a specific exception, 
   an IOException. Catching IOException will also catch things like FileNotFond, 
-  MalformedURLException, ZipExceptionk, etc. So the only way to figure out if this 
+  MalformedURLException, ZipException, etc. So the only way to figure out if this 
   was a manifest parsing exception is to read the source code for Attributes.java,
   find all messages it can send out, and then proceed to proudly do string parsing 
   on the message contained in the caught excpetion. Yeah, way to go.  
@@ -25,7 +25,7 @@ long, invalid characrters etc it:
 Am I upset about this piece of code. Well...a bit. 
 
 As an example, I have implemented a build framework for e-commerce projects 
-where we on a daily basis and for a number of customer scan hundreds of 
+where we on a daily basis and for a number of customers scan hundreds of 
 manifest files for certain meta data. 
 
 When something goes wrong with one of the manifest files, all we get from java
